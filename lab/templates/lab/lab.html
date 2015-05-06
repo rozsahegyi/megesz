@@ -1,0 +1,16 @@
+{% extends 'lab/frame.html' %}
+
+{% block main %}
+<div id='main'>
+	<section id='content' class=''>
+		{% block content %}
+		{{content}}
+		{% endblock %}
+	</section>
+	<section class='status'>
+		<pre>{% block status %}{{status}}{% endblock %}</pre>
+	</section>
+</div>
+{% endblock %}
+
+{% block overlay %}{% endblock %}

@@ -1,0 +1,16 @@
+.dockerignore
+__
+bin
+include
+lib
+local
+*.pyc
+*.log
+
+notes.txt
+
+build*
+dist
+*.spec
+env
+private_*

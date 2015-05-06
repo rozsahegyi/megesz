@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- © 2012-present László Rózsahegyi -->
+	<meta charset='utf-8' />
+	<title>--</title>
+	<meta name='description' content='' />
+	<meta name='keywords' content='' />
+	<meta name='viewport' content='width=device-width' />
+	<link rel="copyright" href="//creativecommons.org/licenses/by-sa/3.0/" />
+	<!-- <link href='http://fonts.googleapis.com/css?family=Oswald:400,700' rel='stylesheet' type='text/css' /> -->
+	<link rel='stylesheet/less' href='/lab/direct/main.less' type='text/css' />
+	<script src='/static/jquery.min.js'></script>
+	<script src='/static/jquery.waitforimages.js'></script>
+	<script type="text/javascript">less = { strictMath: 1, env: 'production' };</script>
+	<script src='/static/less.min.js'></script>
+	{% block js %}
+	<script src='/lab/direct/lab.js'></script>
+	{% endblock %}
+</head>
+<body>
+	{% block main %}{% endblock %}
+	<div id='overlay' onclick=''>
+		{% block overlay%}{% endblock %}
+	</div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+html,
+body,
+pre,
+div,
+section {
+  margin: 0px;
+  padding: 0px;
+}
+body {
+  background: #efefef;
+  font: 12px verdana;
+}
+.iframe {
+  float: left;
+  border-right: 1px solid #666;
+}
+.iframe a {
+  display: block;
+  padding: 5px;
+  border: 1px outset #888888;
+  background: #666666;
+  color: #f0f0f0;
+  border: none;
+}
+.iframe iframe {
+  width: 532px;
+  height: 350px;
+  border: none;
+}
+.dark {
+  border: 1px outset #888888;
+  background: #666666;
+  color: #f0f0f0;
+}
+.light {
+  border: 1px outset #cccccc;
+  background: #dddddd;
+  color: #111111;
+}
+.panel {
+  margin: 0px 5px 5px 0px;
+  padding: 4px;
+  border: 1px outset #888888;
+  background: #666666;
+  color: #f0f0f0;
+  border-radius: 2px;
+}
+section {
+  padding: 10px;
+}
+section:nth-child(n+2) {
+  padding-top: 9px;
+  border-top: 1px solid #666666;
+}
+.status {
+  border: 1px outset #cccccc;
+  background: #dddddd;
+  color: #111111;
+  border: none;
+}
+.server, .client {
+  overflow: hidden;
+}
+.server h1, .client h1 {
+  margin-top: 0px;
+}
+.server input, .client input {
+  display: block;
+  clear: both;
+  width: 300px;
+  background: #dddddd;
+  border: 1px solid #cccccc;
+}
+.server div:nth-child(2n), .client div:nth-child(2n) {
+  float: left;
+  clear: left;
+  width: 120px;
+}
+.server div:nth-child(2n+1), .client div:nth-child(2n+1) {
+  float: left;
+  background: blue;
+}
+.server div:last-of-type, .client div:last-of-type {
+  margin-bottom: 10px;
+}

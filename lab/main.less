@@ -1,0 +1,60 @@
+.keyframes(@name; @args; @frames) {
+	-webkit-animation:	@name @args;
+	-moz-animation:		@name @args;
+	animation:			@name @args;
+	@-webkit-keyframes	@name { @frames(); }
+	@-moz-keyframes		@name { @frames(); }
+	@keyframes			@name { @frames(); }
+}
+
+@dark-bg: #666;
+@dark-color: #111;
+@dark-border: #888;
+@light-bg: #ddd;
+@light-color: #f0f0f0;
+@light-border: #ccc;
+
+html, body		{ height: 100%; background: #efefef; font: 12px verdana; }
+html, body, pre,
+div, section	{ margin: 0px; padding: 0px; }
+
+.iframe			{ float: left; width: calc(25% - 1px); height: 600px; border-right: 1px solid #666; overflow: hidden;
+	iframe		{ width: 100%; height: 100%; border: none; }
+}
+
+#main > section	{ border-bottom: 1px solid #666; }
+#main > section:last-child { border-bottom: none; }
+
+.status			{ margin: 10px; border: none; color: #666; }
+
+.dark			{ border: 1px outset @dark-border; background: @dark-bg; color: @light-color; }
+.light			{ border: 1px outset @light-border; background: @light-bg; color: @dark-color; }
+.panel			{ margin: 0px 5px 5px 0px; padding: 4px; .dark; border-radius: 2px; }
+
+.demo			{ padding-bottom: 10px;
+	h1			{ font-size: 14px; margin: 0px 0px 15px; padding: 10px; background: #335588; color: white; }
+	ul			{ margin: 5px; padding-left: 25px; }
+	li			{ margin: 3px 10px; }
+}
+
+.node			{ max-width: 600px; height: 400px; padding: 0px; overflow: hidden; background: #ddeeff;
+	h1			{ margin: 0px; padding: 10px; background: #6699cc; color: white; font-size: 12px;
+		&.server{ background: #335588; }
+		b		{ float: right; }
+	}
+	div			{ margin: 10px; overflow: auto;
+		b		{ display: inline-block; width: 130px; margin-top: 2px; }
+		input	{ float: right; width: calc(100% - 145px); height: 16px; padding: 2px 4px; border: none; background: white; }
+	}
+	div.server	{ xheight: 80px; }
+	.history	{ margin-top: 20px;
+		i, b	{ display: inline-block; width: 25%; height: 20px; margin: 0px 0px 5px; padding-top: 4px; text-align: center; color: white; }
+		i		{ width: 50%; background: #eee; color: #333; font-weight: bold; font-style: normal; }
+		div		{ height: 48px; margin: 8px 0px; xpadding: 5px; background: #f9f9f9; color: #333; text-align: center; overflow: hidden;
+			.keyframes(drop; 0.15s ease; { from { transform: translateX(-110%); xheight: 0px; opacity: 1; } to { } });
+		}
+		.browser{ background: #666666; }
+		.client	{ background: #6699cc; }
+		.server	{ background: #335588; }
+	}
+}

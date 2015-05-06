@@ -1,0 +1,22 @@
+{% extends "lab/lab.html" %}
+
+{% block content %}
+<section class='node'>
+	<h1 class="{{type}}">{{type|capfirst}} <b>{{ip}} {{key}}</b></h1>
+	{% for id, ip, key in clients %}
+	<div class="client">
+		<b>{{id}}</b>
+		<input type='text' name='{{ip}}' placeholder='Send a message' autofocus='1' onchange='lab.submit("/lab/send", this);' />
+	</div>
+	{% endfor %}
+	{% if type == 'client' %}
+	<div class="server">
+		<b>{{server_id}} {{server_status}}</b>
+		<input type='text' name='message' placeholder='Send a message' autofocus='1' onchange='lab.submit("/lab/send", this);' />
+	</div>
+	{% endif %}
+	<div class='history'>
+	</div>
+	{{content}}
+</section>
+{% endblock %}

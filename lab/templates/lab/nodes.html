@@ -1,0 +1,29 @@
+{% extends 'lab/frame.html' %}
+
+{% block main %}
+<div class='demo'>
+	<h1>Demo page - {{frames|length}} active servers/clients</h1>
+	<li>Hosts in this demo are simulated on a single machine, but normally they would just be hosts on the same network. Each is running a django testserver, with a custom wsgi app handling communication between them.</li>
+	<li><b>Security:</b></li>
+	<ul>
+		<li>Each node has their RSA key which they broadcast (the public part) via udp after starting up. Server and clients both listen for udp data, each storing the other party's ip and public key.</li>
+		<li>Nodes communicate via encrypted http requests; data is converted to json and encrypted with the receiving node's key, then sent via http post. The target node decrypts this, reads the json, and sends a similarly encrypted json response.</li>
+		<li>Django has to run locally, so browsers communicate sensitive data only to localhost; then these requests are encrypted before going into the network. In a live scenario, this would ensure secure communication.</li>
+	</ul>
+	<li><b>Features:</b></li>
+	<ul>
+		<li>Messages: currently simple messaging is implemented, but any regular server-client feature could be added.</li>
+		<li>Secure module: a simplified RSA key api; Result and Response classes to easily encrypt/get/decrypt results.</li>
+		<li>Custom WSGIHandler: enables Server mode if a valid server keyfile is available; maintains a permanent Server or Client instance which broadcast and exchange keys via udp, and are accessible as req.node in views (via CustomRequest).</li>
+		<li>Long polling: implemented using threading and events; the browser ajax-polls the server for updates; this request waits an event which is activated when a message is received (or a timeout reached); the browser then loads new messages.</li>
+		<li>Runsilent command: customized runserver command; supports demo mode (several webservers on one machine); suppresses static, media, etc. messages, collects error logs, and ignores interrupted ajax request errors.</li>
+	</ul>
+</div>
+{% for url in frames %}
+<div class='iframe'>
+	<iframe src="{{url}}" scrolling="no"></iframe>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block js %}{% endblock %}
