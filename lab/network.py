@@ -25,22 +25,34 @@ class SimpleUdp(object):
 	"""Basic udp mixin with listen/broadcast/receive functions."""
 
 	ip = None
-	udp_port = settings.LAB.http_port
 	bufsize = 65536
+
+	@property
+	def udp_port(self):
+		return getattr(settings.LAB, 'local', None) and int(settings.LAB.address.get('port')) or settings.LAB.http_port
 
 	def broadcast_udp(self, data, target=None):
 		"""Broadcast json data or send it to a specific target."""
 
-		prefix = 'sending to ' + target if target else 'broadcasting'
-		logger.debug(prefix + ': %s', data)
-
 		data = json.dumps(data)
+
 		s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		if not target:
+		if target:
+			target = target.split(':') + [self.udp_port]
+			target, port = target[0], int(target[1])
+		else:
+			target, port = '<broadcast>', self.udp_port
 			s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-		if not target: target = '<broadcast>'
-		s.sendto(data, (target, self.udp_port))
+
+		# if nodes run on the same host, send to localhost
+		if getattr(settings.LAB, 'local', None):
+			logger.debug('sending udp to localhost:%s+%s', settings.LAB.http_port, settings.LAB.local)
+			for i in range(settings.LAB.local + 1):
+				s.sendto(data, ('', settings.LAB.http_port + i))
+		else:
+			logger.debug('sending udp to %s:%s', target, port)
+			s.sendto(data, (target, port))
 		s.close()
 
 	def listen_udp(self):
@@ -48,6 +60,7 @@ class SimpleUdp(object):
 		def listen():
 			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 			s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+			logger.info('listening on %s', self.udp_port)
 			s.bind(('', self.udp_port))
 			try:
 				while 1: self.received_udp(*s.recvfrom(self.bufsize))
@@ -93,7 +106,8 @@ class Node(object):
 			available = lambda ip: subnet(ip) not in settings.LAB.ignore_subnets
 			try:
 				import netifaces
-				ips = [netifaces.ifaddresses(x)[netifaces.AF_INET][0]['addr'] for x in netifaces.interfaces()]
+				info = (netifaces.ifaddresses(x) for x in netifaces.interfaces())
+				ips = [x[netifaces.AF_INET][0]['addr'] for x in info if x.get(netifaces.AF_INET)]
 				logger.debug('netifaces ips: %r', ips)
 			except ImportError:
 				# fallback to a simple ip list of the hostname

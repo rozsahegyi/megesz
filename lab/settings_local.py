@@ -1,3 +1,3 @@
 from megesz.settings import *
 
-LAB.local = True
+LAB.local = 3 # number of clients expected

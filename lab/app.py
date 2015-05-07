@@ -67,7 +67,6 @@ class Client(network.Node, network.SimpleUdp):
 
 	def broadcast_info(self, target=None):
 		"""Thread; sends to a target ip, or broadcasts and asks for responses."""
-		if target: target = target.split(':')[0]
 		data = {
 			'role': self.role,
 			'ip': self.ip,
