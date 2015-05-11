@@ -77,6 +77,7 @@ class SimpleUdp(object):
 		if (hasattr(self, 'ips') and data.ip in self.ips) or \
 			data.ip.rsplit('.', 1)[0] in settings.LAB.ignore_subnets:
 			return
+		if hasattr(self, 'ip') and data.ip == self.ip: return
 		logger.debug('received from %s: %s', data.ip, data)
 		self.handle_udp(data)
 
