@@ -17,7 +17,7 @@ class mapping(dict):
 			content = ((k, mapping(v) if isinstance(v, dict) else v) for k, v in content if k and k[0] != '_')
 		super(mapping, self).__init__(content, *args, **kw)
 		self.__dict__ = self
-	def __getitem__(self, key):
+	def __getattr__(self, key):
 		return None
 
 
