@@ -1,10 +1,12 @@
-from django.conf.urls import patterns, include, url
-
+from django.urls import include, path
 from django.contrib import admin
+
+from lab import views
+
 admin.autodiscover()
 
-urlpatterns = patterns('',
-    url(r'^$', 'lab.views.home', name='home'),
-    url(r'^lab/', include('lab.urls')),
-    url(r'^admin/', include(admin.site.urls)),
-)
+urlpatterns = [
+    path('', views.home, name='home'),
+    path('lab/', include('lab.urls')),
+    path('admin/', admin.site.urls),
+]

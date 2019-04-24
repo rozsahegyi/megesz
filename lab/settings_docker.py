@@ -1,3 +1,3 @@
 from megesz.settings import *
 
-LAB.docker = {'host': 'dev'}
+LAB.docker = {'host': 'ubuntu'}

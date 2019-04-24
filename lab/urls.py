@@ -1,14 +1,16 @@
-from django.conf.urls import patterns, include, url
+from django.urls import include, path, re_path
 from django.contrib import admin
+
+from . import views
 
 admin.autodiscover()
 
-urlpatterns = patterns('',
-    url(r'^$', 'lab.views.home', name='home'),
-    url(r'^nodes$', 'lab.views.nodes'),
-    url(r'^status$', 'lab.views.status'),
-    url(r'^send$', 'lab.views.send'),
-    url(r'^safe_request$', 'lab.views.safe_request'),
-    url(r'^updates/(?P<id>\w*)$', 'lab.views.updates'),
-    url(r'^direct/(?P<path>\w+\.(less|css|js))$', 'lab.views.direct'),
-)
+urlpatterns = [
+    path('', views.home, name='home'),
+    path('nodes', views.nodes),
+    path('status', views.status),
+    path('send', views.send),
+    path('safe_request', views.safe_request),
+    re_path(r'^updates/(?P<id>\w*)$', views.updates),
+    re_path(r'^direct/(?P<path>\w+\.(less|css|js))$', views.direct),
+]
