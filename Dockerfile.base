@@ -1,8 +1,0 @@
-
-FROM ubuntu
-MAINTAINER laszlo@rozsahegyi.info
-
-RUN apt-get update
-RUN apt-get upgrade -y
-RUN apt-get install -y build-essential python-dev python-pip
-RUN pip install fabric virtualenvwrapper

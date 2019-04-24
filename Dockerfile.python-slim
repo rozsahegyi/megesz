@@ -1,0 +1,10 @@
+
+FROM python:3.7-slim
+
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install -y build-essential python-dev python-pip
+
+WORKDIR /home/megesz
+ADD requirements.txt /home/requirements.txt
+RUN pip install -r /home/requirements.txt

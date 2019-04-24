@@ -1,0 +1,10 @@
+
+FROM python:3.7-alpine
+
+RUN apk add --no-cache gcc musl-dev linux-headers
+
+WORKDIR /home/megesz
+ADD requirements.txt /home/requirements.txt
+RUN pip install -r /home/requirements.txt
+
+RUN apk del gcc musl-dev linux-headers

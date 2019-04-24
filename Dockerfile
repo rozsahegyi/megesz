@@ -1,10 +1,8 @@
 
-FROM base
-MAINTAINER laszlo@rozsahegyi.info
+FROM megesz-base
 
 WORKDIR /home/megesz
-ADD requirements.txt /home/requirements.txt
-RUN pip install -r /home/requirements.txt
+ADD . /home/megesz
 
 CMD ["--settings=lab.settings_docker_client"]
-ENTRYPOINT ["./manage.py", "runsilent", "0.0.0.0:8000"]
+ENTRYPOINT ["./manage.py", "runserver", "0.0.0.0:8000"]
