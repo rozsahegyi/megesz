@@ -13,12 +13,10 @@
 import os, time, re, threading, collections
 from django.core.handlers.wsgi import WSGIHandler, WSGIRequest
 from django.conf import settings
-import secure, network
-from . import logging
+from . import logging, secure, network
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 Message = collections.namedtuple('Message', 'owner target via content')
 
@@ -67,10 +65,11 @@ class Client(network.Node, network.SimpleUdp):
 
 	def broadcast_info(self, target=None):
 		"""Thread; sends to a target ip, or broadcasts and asks for responses."""
+		logger.debug('self ip: %r %s', self.ip, type(self.ip))
 		data = {
 			'role': self.role,
 			'ip': self.ip,
-			'key': self.key.export(),
+			'key': self.key.export().decode('utf8'),
 			'signature': self.key.sign(self.ip),
 			'respond': not target,
 		}
@@ -95,8 +94,11 @@ class Client(network.Node, network.SimpleUdp):
 			digest = settings.LAB.server_digest
 		try:
 			key = secure.Key(data.key)
+			logger.debug('created key from %r %s', data.key, type(data.key))
 			verified = key.verify(data.ip, data.signature)
+			logger.debug('verified key: %r', verified)
 			matched = not digest or key.match_digest(data.key, digest)
+			logger.debug('matched key: %r', matched)
 			return verified and matched
 		except Exception as e:
 			self.logger.error('verify_key failed: %s', e.args)
@@ -184,7 +186,7 @@ class Application(WSGIHandler):
 		keyfile = settings.LAB.keyfile
 		config = {}
 		try:
-			import config as conf
+			from . import config as conf
 			config = network.mapping(vars(conf))
 		except Exception as e:
 			raise

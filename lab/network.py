@@ -6,13 +6,12 @@ from . import logging
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 class mapping(dict):
 	"""Dict with attribute access. Accepts dict-like objects or tuple list."""
 	def __init__(self, content=None, *args, **kw):
-		content = content.iteritems() if hasattr(content, 'iteritems') else content or []
+		content = content.items() if hasattr(content, 'items') else content or []
 		if content:
 			content = ((k, mapping(v) if isinstance(v, dict) else v) for k, v in content if k and k[0] != '_')
 		super(mapping, self).__init__(content, *args, **kw)
@@ -52,7 +51,7 @@ class SimpleUdp(object):
 				s.sendto(data, ('', settings.LAB.http_port + i))
 		else:
 			logger.debug('sending udp to %s:%s', target, port)
-			s.sendto(data, (target, port))
+			s.sendto(data.encode('utf8'), (target, port))
 		s.close()
 
 	def listen_udp(self):
@@ -114,6 +113,6 @@ class Node(object):
 				# fallback to a simple ip list of the hostname
 				ips = socket.gethostbyname_ex(socket.gethostname())[2]
 				logger.debug('fallback ips: %r', ips)
-			self._ips = filter(preferred, ips) or sorted(filter(available, ips))
+			self._ips = list(filter(preferred, ips)) or sorted(filter(available, ips))
 		return self._ips
 

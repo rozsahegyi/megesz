@@ -2,12 +2,11 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
-import secure, app
-from . import logging
+from . import logging, secure, app
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+
 
 secure.Response.cls = HttpResponse
 secure.Result.default_path = 'lab/safe_request'
@@ -34,7 +33,7 @@ def status(req):
 def nodes(req):
 	"""If a server, shows all active nodes on one page."""
 	if not req.node.is_server: return home(req)
-	frames = (req.node.ip,) + tuple(sorted(req.node.clients.iterkeys()))
+	frames = (req.node.ip,) + tuple(sorted(req.node.clients))
 	# if a docker host is set, use that host:(http_port + 1, 2...) in iframes
 	docker = getattr(settings.LAB, 'docker', None)
 	if docker and docker.get('host'):
@@ -56,15 +55,17 @@ def home(req):
 		'ip': req.node.ip,
 		'key': req.node.key,
 		'status': '\n'.join(info),
+		'clients': [],
+		'content': '',
 	}
 	if req.node.is_server:
-		data['clients'] = sorted((app.Client.str(k), k, v) for k, v in req.node.clients.iteritems())
+		data['clients'] = sorted((app.Client.str(k), k, v) for k, v in req.node.clients.items())
 	elif req.node.server.ip:
 		# also display the server status
 		result = secure.Result(remote=(req.node.server.key, req.node.server.ip, 'lab/status'))
 		data['server_id'] = app.Server.str(req.node.server.ip)
 		data['server_status'] = result.content['status']
-		# server_response = sorted('%s: %s' % (k, v) for k, v in result.response.__dict__.iteritems())
+		# server_response = sorted('%s: %s' % (k, v) for k, v in result.response.__dict__.items())
 		server_response = ['%s: %s' % (x, getattr(result.response, x)) for x in 'url status_code content'.split()]
 		data['status'] += '\n\n-- server status --\n' + '\n'.join(server_response)
 
@@ -81,7 +82,8 @@ def send(req, *args, **kw):
 	# if req.META['REMOTE_ADDR'] != 'localhost'
 
 	# get the message, the remote node's public key, ip, and role
-	ip, message = req.GET.iteritems().next() if req.node.is_server else (req.node.server.ip, req.GET['message'])
+	logger.debug('send: %r %r', req.GET, req.GET.items())
+	ip, message = list(req.GET.items())[0] if req.node.is_server else (req.node.server.ip, req.GET['message'])
 	role = ('client', 'server')[not req.node.is_server]
 	remote = (req.node.remote_key(ip), ip, role)
 
@@ -90,10 +92,12 @@ def send(req, *args, **kw):
 	# send the request, and decode results with this node's key
 	params = {'from': req.node.ip, 'message': message}
 	result = secure.Result(key=req.node.key, remote=remote[0:2], params=params)
+	logger.debug('result dict: %r', result.__dict__)
 
 	# add messages showing the order of requests
 	remote = app.Client.str(remote[1], name=remote[2])
 	shorten = lambda x: '%s... (%d chars)' % (x[0:32], len(x))
+
 	req.node.add_messages([
 		('browser', None, 'ajax request - json', message),
 		(None, remote, 'http post - encoded', shorten(result.params['content'])),
@@ -114,7 +118,10 @@ def safe_request(req):
 	"""
 
 	# decode the content with our key
-	result = secure.Result(req.REQUEST.get('content', ''), key=req.node.key)
+	content = req.GET.get('content', '')
+	logger.debug('request content: GET = %r, POST = %r', req.GET, req.POST)
+	result = secure.Result(content, key=req.node.key)
+	logger.debug('result object: %r', result.__dict__)
 	ip, message = result.content.get('from', req.META['REMOTE_ADDR']), result.content['message']
 
 	# add messages showing the request and result

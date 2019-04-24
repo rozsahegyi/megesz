@@ -4,11 +4,15 @@ from Crypto import Random
 from Crypto.Hash import MD5
 from Crypto.PublicKey import RSA
 from django.conf import settings
-from network import mapping
+from .network import mapping
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 KEY_LENGTH = 1024
-KEY_EXPONENT = long(65537)
+KEY_EXPONENT = 65537
 
 content_types = mapping({
 	'json': 'application/json',
@@ -37,21 +41,26 @@ class Key(object):
 		return self.private and self.private.sign(self.hashed(message), '')
 
 	def verify(self, message, signature):
+		logger.debug('Key verify: %s %s %s', type(message), type(self.hashed(message)), type(signature))
 		return self.public.verify(self.hashed(message), signature)
 
 	def encrypt(self, text):
-		return b64encode(self.public.encrypt(text, 32)[0])
+		return b64encode(self.public.encrypt(text.encode('utf8'), 32)[0])
 
 	def decrypt(self, text):
 		return self.private and self.private.decrypt(b64decode(text))
 
 	def hashed(self, text):
-		return MD5.new(text).digest()
+		return MD5.new(text.encode('utf8')).digest()
 
 	def digest(self, text):
+		if type(text) == str:
+			text = text.encode('utf8')
 		return hashlib.sha256(text).hexdigest()
 
 	def match_digest(self, text, digest):
+		logger.debug('Key match_digest: text = %r -- digest = %r', text, digest)
+		logger.debug('Key match_digest: %s %s -- %s %s', self.digest(text), type(self.digest(text)), digest, type(digest))
 		return self.digest(text) == digest
 
 	def __repr__(self):
