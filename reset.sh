@@ -1,3 +1,4 @@
 
-docker rm -f mserver mclient1 mclient2 mclient3
-killall python
+# remove containers and images
+docker rm -f `docker ps -aq -f label=megesz`
+docker rmi -f megesz megesz-base

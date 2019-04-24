@@ -9,7 +9,7 @@ local
 
 notes.txt
 
-build*
+build/
 dist
 *.spec
 env
