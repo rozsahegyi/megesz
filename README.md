@@ -2,30 +2,22 @@
 Megesz -- a Django demo
 =======================
 
-Concept
--------
- - this is a demo/exercise for secure communication on a network over http
- - machines on a network would each run this django project
- - one of them has a server key, the others act as clients (with random keys)
- - servers and clients broadcast/exchange keys
- - secure requests (and responses) are encrypted:
-   - (browser) -> (local django) -[encrypted request]-> (remote machine)
+- a webapp concept for secure communication on a local network via http
+- machines on a network would each run this django project, with one having the server key, the others acting as clients (with random keys)
+- servers and clients broadcast/exchange keys via udp
+- after that, secure requests (and responses) are encrypted: `browser` -> `local django` -> `[encrypted request]` -> `remote machine`
 
-Demo on one host
-----------------
- - install this into a virtualenv, pip install -r requirements.txt
- - ./run_local.sh
- - wait for django instances to start, then open http://localhost:8000
- - a demo page should open with some explanation and details
- - the demo runs 4 django instances, and can take some cpu time
- - ./reset.sh to stop (will stop python processes)
+Run with Docker
+---------------
+- containers use port 8000-8005, these need to be accessible on the machine running docker (so allow them in your vagrantfile, firewall, etc)
+- set the hostname of your docker machine in `lab/settings_docker.py`: `LAB.docker = {'host': 'your_host'}`
+- `./build.sh` will build a python base image, and another image for the project
+- `./run.sh` will (re)start containers, a server and at least one client (you can allow more)
+- open `http://your_host:8000` and you can test encrypted requests between the server and clients
+- `reset.sh` will clean up images and containers
 
-Demo with Docker
-----------------
- - have or install Docker
- - ./build.sh will build two images (a base and one set up for the project)
- - set the hostname (or ip) of your docker machine in lab/settings_docker.py
-   - LAB.docker = {'host': 'your_host'}
-   - your browser should be able to access your_host:8000-8003
- - ./run_docker.sh - this will run 4 containers, each with a django instance
- - open http://localhost:8000 
+TODO
+----
+- finish adapting fully to latest Django, revise confs, clean up
+- setup with docker compose
+- revise/update runsilent.py if needed
